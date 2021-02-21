@@ -14,3 +14,8 @@ docker-compose run --rm -u ubu centos bash
 # sudo yum install rust-toolset-7 -y
 # sudo yum install go-toolset-7 -y
 
+# cmake-3.19.5  gh-cli  go-1.16  python-3.6.13  sbt-1.4.7-0
+
+# pip3 install --upgrade pip -i http://mirrors.aliyun.com/pypi/simple --trusted-host mirrors.aliyun.com
+# pip3 install numpy scipy matplotlib ipython jupyter pandas sympy nose -i http://mirrors.aliyun.com/pypi/simple --trusted-host mirrors.aliyun.com
+# pip3 install scikit-learn -i http://mirrors.aliyun.com/pypi/simple --trusted-host mirrors.aliyun.com
