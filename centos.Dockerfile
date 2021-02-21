@@ -1,5 +1,5 @@
 FROM centos:7
 RUN yum install epel-release -y && yum update -y
-RUN yum install tigervnc-server net-tools openbox xterm xfce4-terminal tint2 which wget curl emacs -y
+RUN yum install tigervnc-server net-tools openbox xterm xfce4-terminal tint2 sudo which wget curl emacs sudo -y
 RUN (adduser ubu) && (usermod -G wheel ubu) && (echo '123456' | passwd --stdin ubu)
 
