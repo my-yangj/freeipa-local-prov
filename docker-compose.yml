@@ -1,0 +1,15 @@
+# yaml 
+version: '3.3'
+services:
+  centos:
+    build:
+      context: .
+      dockerfile: centos.Dockerfile
+    volumes:
+      - /space/opt:/opt
+      - /space/ubu:/home/ubu
+    container_name: centos
+    command: ["ls"]
+
+  #db:
+    #image: mysql
