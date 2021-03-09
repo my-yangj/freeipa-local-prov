@@ -9,8 +9,26 @@ In the below is the key software/technology being used, and ubuntu 20.04 is the 
 - linux/lvm2/nfs
 - docker-compose for freeipa/mysql/gitea/jenkins
 - dnsmasq w/pxe to bootup computing nodes
-- docker/vagrant images/boxes to run on computing nodes
+- podman/docker/vagrant images/boxes to run on computing nodes
 
-centosDockerfile:     serve user terminal
-freeipa.Dockerfile:   directory service (I got its dns conflict with ubuntu host, thus dns is not in docker but using dnsmasq in host.
+centosDockerfile
+- serve user terminal
+
+freeipaDockerfile:   
+- directory service (I got its dns conflict with ubuntu host, thus dns is not in docker but using dnsmasq in host.
+  see: https://github.com/freeipa/freeipa-container
+  
+mysqlDockerfile
+- mysql see: https://github.com/docker-library/mysql/tree/master/8.0
+
+giteaDockerfile
+- gitea see: https://docs.gitea.io/en-us/install-with-docker/
+- gitea backup/restore see: https://gist.github.com/sinbad/4bb771b916fa8facaf340af3fc49ee43
+
+dnsmasq:
+- tbd https://stackoverflow.com/questions/38816077/run-dnsmasq-as-dhcp-server-from-inside-a-docker-container
+-
+host setup,
+1. docker install
+2. images/volumnes lvm
 
