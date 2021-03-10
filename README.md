@@ -38,8 +38,9 @@ dockerfile:
     graphroot = "/mnt/backup/"
     rootless_storage_path = "/mnt/backup/"
   ````
-  1. the dockerfile mount host volumes to be backup and create a container; 2. stop the container and commit the image including mounted volumes;
-  2. skopeo can used to inspect the image.
+  - the dockerfile mount host volumes to be backup
+  - 1. create a container; 2. stop the container and commit the image 3. start the container
+  - skopeo can used to inspect the image.
   
 - dnsmasq:
   tbd https://stackoverflow.com/questions/38816077/run-dnsmasq-as-dhcp-server-from-inside-a-docker-container
