@@ -27,14 +27,25 @@ dockerfile:
   gitea see: https://docs.gitea.io/en-us/install-with-docker/
   gitea backup/restore see: https://gist.github.com/sinbad/4bb771b916fa8facaf340af3fc49ee43
 
-- mbkupDockerfile
-  a podman image is used as backup storage.
-  1. mount host volumes to be backup and create a container; 2. stop the container and commit the image including mounted volumes; 3. rm the container
+- bkupDockerfile
+  a podman container is used for data backup. data is backup its images.
+  a backup user is created and the backup container is run at user mode by backup user. 
+  his container configure file can specify the backup location.
+  
+  [storage]
+  driver = "overlay"
+  runroot = "/mnt/backup/"
+  graphroot = "/mnt/backup/"
+  rootless_storage_path = "/mnt/backup/"
+  
+  1. the dockerfile mount host volumes to be backup and create a container; 2. stop the container and commit the image including mounted volumes;
+  2. skopeo can used to inspect the image.
   
 - dnsmasq:
   tbd https://stackoverflow.com/questions/38816077/run-dnsmasq-as-dhcp-server-from-inside-a-docker-container
 
 host setup,
 1. docker install w/ docker-volumn plugin
-2. lvm volumes lvm
+2. podman
+3. misc tools
 
