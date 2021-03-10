@@ -31,13 +31,13 @@ dockerfile:
   a podman container is used for data backup. data is backup into the container's images.
   a backup user is created to run the backup container at user mode. 
   the container configure file specifies the backup location, and it can be a backup disk or network disk.
-  
+  ```toml
     [storage]
     driver = "overlay"
     runroot = "/mnt/backup/"
     graphroot = "/mnt/backup/"
     rootless_storage_path = "/mnt/backup/"
-  
+  ````
   1. the dockerfile mount host volumes to be backup and create a container; 2. stop the container and commit the image including mounted volumes;
   2. skopeo can used to inspect the image.
   
