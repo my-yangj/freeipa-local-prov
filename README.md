@@ -39,7 +39,7 @@ dockerfile:
     rootless_storage_path = "/mnt/backup/"
   ````
   - the dockerfile mount host volumes to be backup
-  - 1. create a container; 2. stop the container and commit the image 3. start the container
+  - a. create a container; b. stop the container and commit the image c. start the container
   - skopeo can used to inspect the image.
   
 - dnsmasq:
