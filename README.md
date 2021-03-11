@@ -27,6 +27,7 @@ dockerfile:
   gitea see: https://docs.gitea.io/en-us/install-with-docker/
   gitea backup/restore see: https://gist.github.com/sinbad/4bb771b916fa8facaf340af3fc49ee43
 
+- podman & skopeo
 - podman support rootless container. it specifies the image location as below, (location must be host disk).
   ```toml
     [storage]
@@ -45,3 +46,18 @@ host setup,
 2. podman
 3. misc tools
 
+client setup,
+a client can launch the pipeline job remotely with podman_remote, it support attach/detatch (??), so that client can disconnect after job launching. 
+If podman is run by a user enabled to run docker, the pipeline task can even create another docker container to run on. 
+Another way is submit the task to jenkins, who can create container and deliver jobs to docker engines. (similar setting with podman)
+- podman commandline template (tbd)
+  ```sh
+    docker run -d \
+   -v <your_jenkins_home_in_host>:/var/jenkins_home \
+   -v /var/run/docker.sock:/var/run/docker.sock \
+   -v /usr/local/bin/docker:/bin/docker \
+   -p 8080:8080 -p 50000:50000 \
+   --name <my_jenkins> jenkins/jenkins:lts
+ ```
+
+- run pipeline from podman_remote, which can 
