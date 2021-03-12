@@ -14,13 +14,25 @@ In the below is the key software/technology being used, and ubuntu 20.04 is the 
 - podman/docker/vagrant images/boxes to run on computing nodes
 
 ## dockerfiles: 
-- centosDockerfile
-  user terminal service
-
-- freeipaDockerfile:   
-  directory service (I got its dns conflict with ubuntu host, thus dns is not in docker but using dnsmasq in host.
+- centosDockerfile: container run on terminal server; mount the data-volume, create a vnc for user to connect.
+  (user can create container using podman, and connect into it through vnc. script for freeipa client install). 
+    ```
+    docker run --volume /data:/data:rw -v /tmp/.X11-unix:/tmp/.X11-unix --env DISPLAY=unix$DISPLAY -it ubuntu bash
+    ```
+  
+- freeipaDockerfile: provide directory/authentication service (I got its dns conflict with ubuntu host, thus dns is not in docker but using dnsmasq in host.)
+  it should be only one instance in the pool.
   see: https://github.com/freeipa/freeipa-container
   
+- jenkinsDockerfile: provide jenkins service; jenkins can start docker at host.
+      ```sh
+        docker run -d \
+       -v <your_jenkins_home_in_host>:/var/jenkins_home \
+       -v /var/run/docker.sock:/var/run/docker.sock \
+       -v /usr/local/bin/docker:/bin/docker \
+       -p 8080:8080 -p 50000:50000 \
+       --name <my_jenkins> jenkins/jenkins:lts
+     ```
 - mysqlDockerfile
   mysql see: https://github.com/docker-library/mysql/tree/master/8.0
 
@@ -29,7 +41,7 @@ In the below is the key software/technology being used, and ubuntu 20.04 is the 
   gitea backup/restore see: https://gist.github.com/sinbad/4bb771b916fa8facaf340af3fc49ee43
   
 - podman & skopeo
-- podman support rootless container. it specifies the image location as below, (location must be host disk).
+- podman support rootless container so that non-privilege  it specifies the image location as below, (location must be host disk). otherwise container/images are under user's home.
   ```toml
     [storage]
     driver = "overlay"
@@ -39,9 +51,10 @@ In the below is the key software/technology being used, and ubuntu 20.04 is the 
   ````
 - skopeo can used to inspect the image, manipunate its storage
   
-- dnsmasq:
+- dnsmasq: to support dhcp and pxe, and automatically deploy the computing node. 
+  (it is desired to wake up the backup server; run a backup and log a report; and power off the backup server).
   tbd https://stackoverflow.com/questions/38816077/run-dnsmasq-as-dhcp-server-from-inside-a-docker-container
-
+  
 ## setup
 1. host setup, 
   - tools installed on host
@@ -58,13 +71,6 @@ In the below is the key software/technology being used, and ubuntu 20.04 is the 
     If podman is run by a user enabled to run docker, the pipeline task can even create another docker container to run on. 
   
   - Another way is submit the task to jenkins, which can create container and deliver jobs to docker engines. (I think podman can do similarly with podman_remote.)
-      ```sh
-        docker run -d \
-       -v <your_jenkins_home_in_host>:/var/jenkins_home \
-       -v /var/run/docker.sock:/var/run/docker.sock \
-       -v /usr/local/bin/docker:/bin/docker \
-       -p 8080:8080 -p 50000:50000 \
-       --name <my_jenkins> jenkins/jenkins:lts
-     ```
+
   - alias (optional)
     alias nextflow='podman .... nextflow' # make it feels like nextflow is run locally
