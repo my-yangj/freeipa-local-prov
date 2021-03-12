@@ -16,23 +16,23 @@ In the below is the key software/technology being used, and ubuntu 20.04 is the 
 ## dockerfiles: 
 - centosDockerfile: container run on terminal server; mount the data-volume, create a vnc for user to connect.
   (user can create container using podman, and connect into it through vnc. script for freeipa client install). 
-    ```
+    '''
     docker run --volume /data:/data:rw -v /tmp/.X11-unix:/tmp/.X11-unix --env DISPLAY=unix$DISPLAY -it ubuntu bash
-    ```
+    '''
   
 - freeipaDockerfile: provide directory/authentication service (I got its dns conflict with ubuntu host, thus dns is not in docker but using dnsmasq in host.)
   it should be only one instance in the pool.
   see: https://github.com/freeipa/freeipa-container
   
 - jenkinsDockerfile: provide jenkins service; jenkins can start docker at host.
-      ```sh
+      '''sh
         docker run -d \
        -v <your_jenkins_home_in_host>:/var/jenkins_home \
        -v /var/run/docker.sock:/var/run/docker.sock \
        -v /usr/local/bin/docker:/bin/docker \
        -p 8080:8080 -p 50000:50000 \
        --name <my_jenkins> jenkins/jenkins:lts
-     ```
+     '''
 - mysqlDockerfile
   mysql see: https://github.com/docker-library/mysql/tree/master/8.0
 
@@ -42,13 +42,13 @@ In the below is the key software/technology being used, and ubuntu 20.04 is the 
   
 - podman & skopeo
 - podman support rootless container so that non-privilege  it specifies the image location as below, (location must be host disk). otherwise container/images are under user's home.
-  ```toml
+  '''toml
     [storage]
     driver = "overlay"
     runroot = "/mnt/backup/"
     graphroot = "/mnt/backup/"
     rootless_storage_path = "/mnt/backup/"
-  ````
+  '''
 - skopeo can used to inspect the image, manipunate its storage
   
 - dnsmasq: to support dhcp and pxe, and automatically deploy the computing node. 
