@@ -42,29 +42,24 @@ dockerfile:
   tbd https://stackoverflow.com/questions/38816077/run-dnsmasq-as-dhcp-server-from-inside-a-docker-container
 
 1. host setup,
-  1. docker install w/ docker-volumn plugin
-  2. podman
-  3. misc tools
+  - docker install w/ docker-volumn plugin
+  - podman
+  - misc tools
 
 2. client setup,
-  a client can launch the pipeline job remotely with podman_remote, it support attach/detatch (??), so that client can disconnect after job launching. 
-  If podman is run by a user enabled to run docker, the pipeline task can even create another docker container to run on. 
+  - through podman remote
+    with a interactive terminal through podman-remote, and invoke any command from the shell, a client can launch the pipeline job remotely, 
+    it support attach/detatch (??), so that client can disconnect after job launching. 
+    If podman is run by a user enabled to run docker, the pipeline task can even create another docker container to run on. 
   
-  Another way is submit the task to jenkins, which can create container and deliver jobs to docker engines. (I think podman can do similarly with podman_remote.)
-  or just open a interactive terminal through podman-remote, and invoke any command from the shell. 
-  - jenkins in docker: commandline template (tbd)
-    ```sh
-      docker run -d \
-     -v <your_jenkins_home_in_host>:/var/jenkins_home \
-     -v /var/run/docker.sock:/var/run/docker.sock \
-     -v /usr/local/bin/docker:/bin/docker \
-     -p 8080:8080 -p 50000:50000 \
-     --name <my_jenkins> jenkins/jenkins:lts
-   ```
-
-  - run pipeline from podman_remote, which schedule jobs to podman/jenkins with podman_remote
-  - run pipeline from jenkins, which schedule jobs to podman/jenkins
-
-
-3. alias
-   alias nextflow='podman .... nextflow' # make it feels like nextflow is run locally?
+  - Another way is submit the task to jenkins, which can create container and deliver jobs to docker engines. (I think podman can do similarly with podman_remote.)
+      ```sh
+        docker run -d \
+       -v <your_jenkins_home_in_host>:/var/jenkins_home \
+       -v /var/run/docker.sock:/var/run/docker.sock \
+       -v /usr/local/bin/docker:/bin/docker \
+       -p 8080:8080 -p 50000:50000 \
+       --name <my_jenkins> jenkins/jenkins:lts
+     ```
+3. alias (optional)
+   alias nextflow='podman .... nextflow' # make it feels like nextflow is run locally
