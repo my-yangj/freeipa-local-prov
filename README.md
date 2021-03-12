@@ -1,5 +1,6 @@
 # my dockerfiles
 
+## overview
 This repository contains scripts to setup a devops environment based on freeipa and docker. It's target to a small cluster of computers, though a single node should work fine. The env contains a management node and a number of computing nodes. The management node also works as a computer node in a single node env. 
 - The management node:
   provides services of networking/storage, user authertication, job-dispatch and etc.  -tbd-Failover redundance. 
@@ -12,7 +13,7 @@ In the below is the key software/technology being used, and ubuntu 20.04 is the 
 - dnsmasq w/pxe to bootup computing nodes -tbd-
 - podman/docker/vagrant images/boxes to run on computing nodes
 
-dockerfile: 
+## dockerfiles: 
 - centosDockerfile
   user terminal service
 
@@ -26,7 +27,7 @@ dockerfile:
 - giteaDockerfile
   gitea see: https://docs.gitea.io/en-us/install-with-docker/
   gitea backup/restore see: https://gist.github.com/sinbad/4bb771b916fa8facaf340af3fc49ee43
-
+  
 - podman & skopeo
 - podman support rootless container. it specifies the image location as below, (location must be host disk).
   ```toml
@@ -41,11 +42,15 @@ dockerfile:
 - dnsmasq:
   tbd https://stackoverflow.com/questions/38816077/run-dnsmasq-as-dhcp-server-from-inside-a-docker-container
 
-1. host setup,
-  - docker install w/ docker-volumn plugin
-  - podman
-  - misc tools
-
+## setup
+1. host setup, 
+  - tools installed on host
+    -- docker install w/ docker-volumn plugin
+    -- podman
+    -- misc tools
+  - docker_compose file
+    docker compose can start as daemon, the generated image has special signiture so that it doesn't rebuild the image each time. 
+    
 2. client setup,
   - through podman remote
     with a interactive terminal through podman-remote, and invoke any command from the shell, a client can launch the pipeline job remotely, 
@@ -61,5 +66,5 @@ dockerfile:
        -p 8080:8080 -p 50000:50000 \
        --name <my_jenkins> jenkins/jenkins:lts
      ```
-3. alias (optional)
-   alias nextflow='podman .... nextflow' # make it feels like nextflow is run locally
+  - alias (optional)
+    alias nextflow='podman .... nextflow' # make it feels like nextflow is run locally
