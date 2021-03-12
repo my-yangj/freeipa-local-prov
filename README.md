@@ -15,9 +15,10 @@ In the below is the key software/technology being used, and ubuntu 20.04 is the 
 
 ## dockerfiles: 
 - centosDockerfile: container run on terminal server; mount the data-volume, create a vnc for user to connect.
-  (user can create container using podman, and connect into it through vnc. script for freeipa client install). 
+  (user can create container using podman, and connect into it through vnc. script for freeipa client install).
+  
       ```bash
-      docker run --volume /data:/data:rw -v /tmp/.X11-unix:/tmp/.X11-unix --env DISPLAY=unix$DISPLAY -it ubuntu bash
+        docker run --volume /data:/data:rw -v /tmp/.X11-unix:/tmp/.X11-unix --env DISPLAY=unix$DISPLAY -it ubuntu bash
       ```
   
 - freeipaDockerfile: provide directory/authentication service (I got its dns conflict with ubuntu host, thus dns is not in docker but using dnsmasq in host.)
@@ -25,6 +26,7 @@ In the below is the key software/technology being used, and ubuntu 20.04 is the 
   see: https://github.com/freeipa/freeipa-container
   
 - jenkinsDockerfile: provide jenkins service; jenkins can start docker at host.
+
       ```bash
         docker run -d \
        -v <your_jenkins_home_in_host>:/var/jenkins_home \
