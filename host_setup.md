@@ -44,4 +44,6 @@ sudo apt-get -y install podman
 # (Ubuntu 18.04) Restart dbus for rootless podman
 systemctl --user restart dbus
 sudo apt-get -y install buildah skopeo
+
+#3. install gh cli: https://github.com/cli/cli/blob/trunk/docs/install_linux.md
 ```
