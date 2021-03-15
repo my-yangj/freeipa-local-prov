@@ -24,6 +24,8 @@ mkfs.ext4 /dev/mapper/vg02-backup
 /dev/mapper/vg02-backup /home/.backup auto defaults,nofail,x-systemd.device-timeout=9
 
 ## Docker
+#0. install docker 
+
 #1. https://github.com/containers/docker-lvm-plugin
    apt-get install golang go-md2man
    go env -w GOPROXY=https://goproxy.cn,direct
