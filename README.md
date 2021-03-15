@@ -60,17 +60,17 @@ In the below is the key software/technology being used, and ubuntu 20.04 is the 
 ## setup
 1. host setup, 
   - tools installed on host
-    -- docker install w/ docker-volumn plugin
-    -- podman
-    -- misc tools
+    - docker install w/ docker-volumn plugin
+    - podman
+    - misc tools
   - docker_compose file
-    docker compose can start as daemon, the generated image has special signiture so that it doesn't rebuild the image each time. 
+    - docker compose can start as daemon, the generated image has special signiture so that it doesn't rebuild the image each time. 
     
 2. client setup,
   - through podman remote
-    with a interactive terminal through podman-remote, and invoke any command from the shell, a client can launch the pipeline job remotely, 
-    it support attach/detatch (??), so that client can disconnect after job launching. 
-    If podman is run by a user enabled to run docker, the pipeline task can even create another docker container to run on. 
+    - with a interactive terminal through podman-remote, and invoke any command from the shell, a client can launch the pipeline job remotely, 
+    - it support attach/detatch (??), so that client can disconnect after job launching. 
+    - If podman is run by a user enabled to run docker, the pipeline task can run on new created docker/podman (through docker socket or podman remote interface). 
   
   - Another way is submit the task to jenkins, which can create container and deliver jobs to docker engines. (I think podman can do similarly with podman_remote.)
 
