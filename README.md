@@ -59,7 +59,7 @@ In the below is the key software/technology being used, and ubuntu 20.04 is the 
   tbd https://stackoverflow.com/questions/38816077/run-dnsmasq-as-dhcp-server-from-inside-a-docker-container
   
 ## setup
-1. host setup, [host_setup.md](host_setup.md)
+1. host setup see: [host_setup.md](host_setup.md)
   - tools installed on host
     - docker install w/ docker-volumn plugin
     - podman
