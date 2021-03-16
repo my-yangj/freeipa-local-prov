@@ -41,6 +41,7 @@ In the below is the key software/technology being used, and ubuntu 20.04 is the 
 - giteaDockerfile
   gitea see: https://docs.gitea.io/en-us/install-with-docker/
   gitea backup/restore see: https://gist.github.com/sinbad/4bb771b916fa8facaf340af3fc49ee43
+  also refhttps://github.com/go-gitea/gitea/tree/master/docker
   
 - podman & skopeo
 - podman support rootless container so that non-privilege  it specifies the image location as below, (location must be host disk). otherwise container/images are under user's home.
