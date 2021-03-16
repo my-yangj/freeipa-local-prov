@@ -1,5 +1,5 @@
 docker-compose up
-docker-compose run --rm -u ubu centos bash
+docker-compose run --rm -u centos centos bash
 
 # install rh toolset to mounted /opt
 # https://www.softwarecollections.org/en/scls/rhscl/go-toolset-7/
