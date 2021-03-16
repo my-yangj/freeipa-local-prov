@@ -1,0 +1,3 @@
+[submodule "docker-library-official-images/freeipa"]
+	path = docker-library-official-images/freeipa
+	url = https://github.com/freeipa/freeipa-container.git
