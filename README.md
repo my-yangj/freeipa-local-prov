@@ -59,7 +59,7 @@ In the below is the key software/technology being used, and ubuntu 20.04 is the 
   tbd https://stackoverflow.com/questions/38816077/run-dnsmasq-as-dhcp-server-from-inside-a-docker-container
   
 ## setup
-1. host setup see: [host_setup.md](host_setup.md)
+1. management node setup see: [host_setup.md](host_setup.md)
   - tools installed on host
     - docker install w/ docker-volumn plugin
     - podman
@@ -67,13 +67,14 @@ In the below is the key software/technology being used, and ubuntu 20.04 is the 
   - docker_compose file
     - docker compose can start as daemon, the generated image has special signiture so that it doesn't rebuild the image each time. 
     
-2. client setup,
-  - through podman remote
-    - with a interactive terminal through podman-remote, and invoke any command from the shell, a client can launch the pipeline job remotely, 
-    - it support attach/detatch (??), so that client can disconnect after job launching. 
-    - If podman is run by a user enabled to run docker, the pipeline task can run on new created docker/podman (through docker socket or podman remote interface). 
-  
-  - Another way is submit the task to jenkins, which can create container and deliver jobs to docker engines. (I think podman can do similarly with podman_remote.)
+2. compute node setup,
+  - docker/podman install w/ nfs volume
+  - nextflow 
+    local job is dispatched with nextflow pipeline (use podman rootless or docker container);  
+    
+3. job dispatch
+  - user connected to the terminal server (terminal service container run inside cluster)
+  - user run their job through nf pipeline at local node, which creates more containers
+  - user submit their job/pipeline through jenkins and jenkins distribute the jobs to more nodes
 
-  - alias (optional)
-    alias nextflow='podman .... nextflow' # make it feels like nextflow is run locally
+
