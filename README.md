@@ -11,7 +11,7 @@ In the below is the key software/technology being used, and ubuntu 20.04 is the 
 - linux/lvm2/nfs
 - docker-compose for freeipa/mysql/gitea/jenkins
 - dnsmasq w/pxe to bootup computing nodes -tbd-
-- podman/docker/vagrant images/boxes to run on computing nodes
+- podman/docker/vagrant to run on computing nodes
 
 ## dockerfiles: 
 - centosDockerfile: container run on terminal server; mount the data-volume, create a vnc for user to connect.
@@ -43,7 +43,6 @@ In the below is the key software/technology being used, and ubuntu 20.04 is the 
   gitea backup/restore see: https://gist.github.com/sinbad/4bb771b916fa8facaf340af3fc49ee43
   also refhttps://github.com/go-gitea/gitea/tree/master/docker
   
-- podman & skopeo
 - podman support rootless container so that non-privilege  it specifies the image location as below, (location must be host disk). otherwise container/images are under user's home.
   ```toml
     [storage]
@@ -52,6 +51,7 @@ In the below is the key software/technology being used, and ubuntu 20.04 is the 
     graphroot = "/mnt/backup/"
     rootless_storage_path = "/mnt/backup/"
   ```
+  
 - skopeo can used to inspect the image, manipunate its storage
   
 - dnsmasq: to support dhcp and pxe, and automatically deploy the computing node. 
@@ -72,9 +72,9 @@ In the below is the key software/technology being used, and ubuntu 20.04 is the 
   - nextflow 
     local job is dispatched with nextflow pipeline (use podman rootless or docker container);  
     
-3. job dispatch
-  - user connected to the terminal server (terminal service container run inside cluster)
-  - user run their job through nf pipeline at local node, which creates more containers
-  - user submit their job/pipeline through jenkins and jenkins distribute the jobs to more nodes
+3. work flow
+  - user connects to the terminal server (terminal service container)
+  - user runs their job through nf pipeline at local node, which creates more containers
+  - or user submits their job/pipeline into jenkins which delivers jobs to cluster
 
 
