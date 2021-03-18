@@ -37,11 +37,11 @@ services:
       REGISTRY_HTTP_TLS_CERTIFICATE: /certs/domain.crt
       REGISTRY_HTTP_TLS_KEY: /certs/domain.key
       REGISTRY_STORAGE_DELETE_ENABLED: "true"
-    #   REGISTRY_AUTH: htpasswd
-    #   REGISTRY_AUTH_HTPASSWD_PATH: /auth/htpasswd
-    #   REGISTRY_AUTH_HTPASSWD_REALM: Registry Realm
-    #   REGISTRY_HTTP_SECRET: 11112222'
+      #REGISTRY_AUTH: htpasswd
+      #REGISTRY_AUTH_HTPASSWD_PATH: /auth/htpasswd
+      #REGISTRY_AUTH_HTPASSWD_REALM: Registry Realm
+      #REGISTRY_HTTP_SECRET: 11112222'
     volumes:
       - docker_registry:/var/lib/registry
       - ~/certs:/certs
-      # - /path/auth:/auth
+      #- /path/auth:/auth
