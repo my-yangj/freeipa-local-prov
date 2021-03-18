@@ -1,11 +1,14 @@
 # yaml 
 version: '3.3'
 
+volumes:
+  docker_registry:
+  
 services:
   freeipa:
     build:
       context:    docker-library-official-images/freeipa
-      dockerfile: Dockerfile.centos-8
+      dockerfile: Dockerfile.centos-7
     container_name: freeipa
     
   centos:
@@ -24,3 +27,21 @@ services:
 
   #db:
     #image: mysql
+
+  registry:
+    # restart: always
+    image: registry:2.3.0
+    ports:
+      - 5000:5000
+    environment:
+      REGISTRY_HTTP_TLS_CERTIFICATE: /certs/domain.crt
+      REGISTRY_HTTP_TLS_KEY: /certs/domain.key
+      REGISTRY_STORAGE_DELETE_ENABLED: "true"
+    #   REGISTRY_AUTH: htpasswd
+    #   REGISTRY_AUTH_HTPASSWD_PATH: /auth/htpasswd
+    #   REGISTRY_AUTH_HTPASSWD_REALM: Registry Realm
+    #   REGISTRY_HTTP_SECRET: 11112222'
+    volumes:
+      - docker_registry:/var/lib/registry
+      - ~/certs:/certs
+      # - /path/auth:/auth
