@@ -4,7 +4,8 @@
 ## start local docker registry
    - using named volume in docker-compose.yml "docker_registry:/var/lib/registry"
      ```
-     docker volume create -d lvm --name docker_registry --opt thinpool=tp03 --opt size=50G
+     docker volume create -d lvm --name docker_registry --opt thinpool=tp03 --opt size=50G #registry
+     docker volume create -d lvm --name ipa-data --opt  thinpool=tp03 --opt size=1G  #freeipa 
      ```
 
    - if no cert setup, then add {"insecure-registries":["localhost:5000"]} to daemon.json (skopeo refuse connecting such a registry)
@@ -52,7 +53,18 @@
    - podman/docker using local image 
      podman run docker://localhost:5000/centos:7 bash
 
+## install build freeipa client
+   - hostnamectl set-hostname client1.host.cn
+   - vim /etc/hosts for local name lookup for both ipa server and client
+   - apt install freeipa-client oddjob-mkhomedir && ipa-client-install --mkhomedir --no-ntp
+   
 ## build and push generated images to local
+   - using the github freeipa/freeipa-server directly
+     docker run --sysctl net.ipv6.conf.all.disable_ipv6=0 -it -e IPA_SERVER_IP=172.17.0.2 -h ipa.ict-group.cn --read-only \
+            -v /sys/fs/cgroup:/sys/fs/cgroup:ro -v ipa-data:/data:Z  \
+            -p 80:80 -p 443:443 -p 389:389 -p 636:636 -p 88:88 -p 464:464 -p 88:88/udp -p 464:464/udp -p 123:123/udp \
+            freeipa/freeipa-server ipa-server-install
+       #localhost:5000/freeipa:7 ipa-server-install 
    
 ## create named/persistent volumes with docker_lvm_plugin
 
