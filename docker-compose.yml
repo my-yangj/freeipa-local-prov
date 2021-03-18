@@ -5,7 +5,7 @@ services:
   freeipa:
     build:
       context: .
-      dockerfile: docker-library-official-images/freeipa/Dockerfile.centos-7
+      dockerfile: docker-library-official-images/freeipa/Dockerfile.centos-8
     container_name: freeipa
     
   centos:
