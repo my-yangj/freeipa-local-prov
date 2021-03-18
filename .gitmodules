@@ -1,9 +1,9 @@
 [submodule "docker-library-official-images/freeipa"]
 	path = docker-library-official-images/freeipa
-	url = https://github.com/freeipa/freeipa-container.git
+	url = git://github.com/freeipa/freeipa-container.git
 [submodule "docker-library-official-images/mysql"]
 	path = docker-library-official-images/mysql
-	url = https://github.com/docker-library/mysql
+	url = git://github.com/docker-library/mysql
 [submodule "docker-library-official-images/jenkins"]
 	path = docker-library-official-images/jenkins
-	url = https://github.com/jenkinsci/docker
+	url = git://github.com/jenkinsci/docker
