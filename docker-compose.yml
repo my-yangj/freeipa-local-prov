@@ -4,8 +4,8 @@ version: '3.3'
 services:
   freeipa:
     build:
-      context: .
-      dockerfile: docker-library-official-images/freeipa/Dockerfile.centos-8
+      context:    docker-library-official-images/freeipa
+      dockerfile: Dockerfile.centos-8
     container_name: freeipa
     
   centos:

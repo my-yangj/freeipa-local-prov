@@ -1,4 +1,5 @@
 ```bash
+
 # Disk 
 # /etc/crypttab
 nvme0n1p3_crypt UUID=a75f363c-6c38-49d1-b38a-651cbccef2dc none luks,discard
