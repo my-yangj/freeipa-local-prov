@@ -11,7 +11,7 @@ In the below is the key software/technology being used, and ubuntu 20.04 is the 
 - linux/lvm2/nfs
 - docker-compose for freeipa/mysql/gitea/jenkins
 - dnsmasq w/pxe to bootup computing nodes -tbd-
-- podman/docker/vagrant to run on computing nodes
+- podman/docker/vagrant run on computing nodes
 
 ## dockerfiles: 
 - centosDockerfile: container run on terminal server; mount the data-volume, create a vnc for user to connect.
@@ -20,6 +20,9 @@ In the below is the key software/technology being used, and ubuntu 20.04 is the 
       ```bash
         docker run --volume /data:/data:rw -v /tmp/.X11-unix:/tmp/.X11-unix --env DISPLAY=unix$DISPLAY -it ubuntu bash
       ```
+  user could start vnc service on terminal server directly if desktop gui is installed on terminal server.
+  the terminal servers are DMZ computers which have two network interfaces, with one connected with cluster and another open to outside world. user can only connected from outside.
+  firewall/port-forwarding could be enforced on termal server e.g. only vnc connection is permitted; vpn connect is supported through wireguard.
   
 - freeipaDockerfile: provide directory/authentication service (I got its dns conflict with ubuntu host, thus dns is not in docker but using dnsmasq in host.)
   it should be only one instance in the pool.
