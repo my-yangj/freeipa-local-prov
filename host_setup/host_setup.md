@@ -1,4 +1,4 @@
-# disk
+## disk
 ```bash
 # Disk 
 # /etc/crypttab
@@ -28,7 +28,7 @@ mkfs.ext4 /dev/mapper/vg02-backup
 # -tt-noauto /dev/mapper/vg02-backup /home/.backup auto defaults,nofail,x-systemd.device-timeout=9
 ```
 
-# Docker
+## docker
 ```bash
 #0. install docker 
 
