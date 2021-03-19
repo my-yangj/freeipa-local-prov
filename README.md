@@ -64,8 +64,12 @@ master node has the pre-installed tools exports to work nodes with nfs. when a u
 - skopeo can used to inspect the image, manipunate its storage
   
 ## dnsmasq: to support dhcp and pxe and automatically deploy the computing node (-tbd-) 
-  (it is desired to wake up the backup server; run a backup and log a report; and power off the backup server).
-  tbd https://stackoverflow.com/questions/38816077/run-dnsmasq-as-dhcp-server-from-inside-a-docker-container
+  (it is desired to wake up the backup server; start it with hosted image e.g. run a backup and log a report; and then power-off/suspend the server).
+  keep the below as reference, but not implemented in my experiment. 
+  https://stackoverflow.com/questions/38816077/run-dnsmasq-as-dhcp-server-from-inside-a-docker-container
+  pxe env build:  https://netboot.xyz/selfhosting/
+  pxe selfhost container: https://github.com/linuxserver/docker-netbootxyz
+  pxe w/ dhcp: https://github.com/samdbmg/dhcp-netboot.xyz https://github.com/kmanna/docker-nat-router
   
 # setup
 1. master node setup see: [host_setup.md](host_setup.md)
