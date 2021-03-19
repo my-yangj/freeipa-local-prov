@@ -22,11 +22,12 @@ this container run on terminal server, mount the data-volume, create a vnc for u
       ```bash
         docker run --volume /data:/data:rw -v /tmp/.X11-unix:/tmp/.X11-unix --env DISPLAY=unix$DISPLAY -it ubuntu bash
       ```
-the terminal servers are DMZ computers which have two network interfaces, with one connected with cluster and another open to outside world. user can only connect from outside. firewall/port-forwarding could be enforced on termal server e.g.
-   -- external nic has public ip and domain name
-   -- vpn connect is supported through wireguard 
-   -- user connect through vnc to vnc-server run on terminal server
-   -- on terminal server, user can use resources inside the cluster
+ther terminal servers in intranet are just normal worknode.
+the terminal servers are DMZ computers if they have two network interfaces, with one connected with cluster and another open to outside world. user from outside of intranet can only connect through DMZ servers. firewall/port-forwarding could be enforced on termal server e.g.
+   - external nic has public ip and domain name
+   - vpn connect is supported through wireguard 
+   - user connect through vnc to vnc-server run on cluster
+   - through terminal server user use other resources/services inside (under the access policy? or vnc-only? -tbd-)
   
 - freeipaDockerfile: 
 provide directory/authentication service (I got its dns conflict with ubuntu host, thus dns is not in docker but using dnsmasq in host.)
