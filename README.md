@@ -53,8 +53,7 @@ mysql is required by gitea see: https://github.com/docker-library/mysql/tree/mas
   also ref https://github.com/go-gitea/gitea/tree/master/docker
   
 ## podman instead of docker
-master node has the pre-installed tools exports to work nodes with nfs. when a user wants extra tool or need different work enviornment (all nodes are ubuntu20.04), they could create rootless container with podman.
-support rootless container so that non-privilege  it specifies the image location as below, (location must be host disk). otherwise container/images are under user's home.
+master node has the pre-installed tools exports to work nodes with nfs. when a user wants extra tool or need different work enviornment (all nodes are ubuntu20.04), they could create rootless container with podman, which supporst rootless container which is non-privilege.  it specifies the image location as below,  and image location must be host disk *instead of nfs*. otherwise container/images are under user's home.
   ```toml
     [storage]
     driver = "overlay"
@@ -62,7 +61,6 @@ support rootless container so that non-privilege  it specifies the image locatio
     graphroot = "/mnt/backup/"
     rootless_storage_path = "/mnt/backup/"
   ```
-  
 - skopeo can used to inspect the image, manipunate its storage
   
 ## dnsmasq: to support dhcp and pxe and automatically deploy the computing node (-tbd-) 
