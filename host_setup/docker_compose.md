@@ -1,8 +1,8 @@
-# container image build
-  with spec in docker_compose.yml, the below are the steps to build container images.
+with spec in docker_compose.yml, the below are the steps to build container images and run docker_compose
 
+# local docker registry
 ## start local docker registry
-   - using named volume in docker-compose.yml "docker_registry:/var/lib/registry"
+   - using named volumes in docker-compose.yml "docker_registry:/var/lib/registry", they has to be external managed.
      ```
      docker volume create -d lvm --name docker_registry --opt thinpool=tp03 --opt size=50G #registry
      docker volume create -d lvm --name ipa-data --opt  thinpool=tp03 --opt size=1G  #freeipa 
@@ -18,7 +18,7 @@
      docker pull registry.centos.org/centos:7 && docker tag registry.centos.org/centos:7 localhost:5000/centos:7 && docker push localhost:5000/centos:7
      ```
 
-   - setup certification-enabled registry
+   - certification-enabled registry is required to user skopeo (podman?)
      ```
      openssl req -newkey rsa:4096 -nodes -sha256 -keyout certs/domain.key -x509 -days 365 -out certs/domain.crt
      cp domain.crt /usr/local/share/ca-certificates/localhost.crt && update-ca-certificates     
@@ -30,11 +30,10 @@
      export GODEBUG="x509ignoreCN=0 
      ```
      
-## pull required image to local, and manipunite local registry
-   - skopeo copy docker://ubuntu docker://localhost:5000/ubuntu
-
+## or use skopeo to manipulate local registry
    - skopeo can not list images in registry, using curl instead see https://stackoverflow.com/questions/31251356/how-to-get-a-list-of-images-on-docker-registry-v2
      ```
+     skopeo copy docker://ubuntu docker://localhost:5000/ubuntu
      curl --cacert domain.crt https://myregistry:5000/v2/_catalog
      curl -X GET https://myregistry:5000/v2/_catalog 
      curl -X GET https://myregistry:5000/v2/ubuntu/tags/list
@@ -42,31 +41,36 @@
 
    - delete the unused images with curl (correct the cmdline-tbd-) or skopeo
      ```
-     # env REGISTRY_STORAGE_DELETE_ENABLED: "true" should be in docker-compose:registry
+     # env REGISTRY_STORAGE_DELETE_ENABLED: "true" should be added in docker-compose:registry
      # curl -X DELETE localhost:5000/v1/repositories/ubuntu/tags/latest  #incorrect
      skopeo delete docker://localhost:5000/imagename:latest 
 
      #it still cannot remove the image directory and imagename still appear even all tags has been removed 
      docker exec -it registry bash && cd /var/lib/registry/docker/registry/v2/ && delete unused_dir
      ```
-   
+## using docker registry from podman
    - podman/docker using local image 
      podman run docker://localhost:5000/centos:7 bash
 
-## install build freeipa client
-   - hostnamectl set-hostname client1.host.cn
-   - vim /etc/hosts for local name lookup for both ipa server and client
-   - apt install freeipa-client oddjob-mkhomedir && ipa-client-install --mkhomedir --no-ntp
-   
-## build and push generated images to local
-   - using the github freeipa/freeipa-server directly
+# freeipa
+## server
+   - try it with docker
+     ```bash
      docker run --sysctl net.ipv6.conf.all.disable_ipv6=0 -it -e IPA_SERVER_IP=172.17.0.2 -h ipa.ict-group.cn --read-only \
             -v /sys/fs/cgroup:/sys/fs/cgroup:ro -v ipa-data:/data:Z  \
             -p 80:80 -p 443:443 -p 389:389 -p 636:636 -p 88:88 -p 464:464 -p 88:88/udp -p 464:464/udp -p 123:123/udp \
             freeipa/freeipa-server ipa-server-install
        #localhost:5000/freeipa:7 ipa-server-install 
-   
-## create named/persistent volumes with docker_lvm_plugin
+     ```
+   - tune docker_compose.yml file
+     (will use hostnet as it have better performance).
 
-## refine docker-compose.yml to docker-compose-deploy.yml and test the image built on new hosts
-   - update yml to use local images and docker-compose up -d #docker bypasses image build for second run, may not need to change yml in local
+## client in each node
+   ```bash
+   #-tt- --hostnamectl set-hostname client1.host.cn--
+   # vim /etc/hosts for lookuping up ipa server. #dns setup -tbd-
+   apt install freeipa-client oddjob-mkhomedir && ipa-client-install --mkhomedir --no-ntp
+   ```
+   
+# refine docker-compose.yml
+   - update yml to use and maintain local images (-tbd-)
