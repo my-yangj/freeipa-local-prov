@@ -14,22 +14,27 @@ In the below is the key software/technology being used, and ubuntu 20.04 is the 
 - podman/docker/vagrant run on computing nodes
 
 ## dockerfiles: 
-- centosDockerfile: container run on terminal server; mount the data-volume, create a vnc for user to connect.
-  (user can create container using podman, and connect into it through vnc. script for freeipa client install).
+these dockerfiles below are used to generate local maintained container images, if image with same functionality are available from public docker image registry, those image could be used and retire or simply the local dockerfiles.
+
+- centosDockerfile: 
+this container run on terminal server, mount the data-volume, create a vnc for user to connect. it is an alternative if a user dont like the default vnc-server on the terminal server directly.  the user can create container by using podman, and connect into it through vnc. otherwise user could start vnc service on terminal server directly if the default desktop gui works for them.  
   
       ```bash
         docker run --volume /data:/data:rw -v /tmp/.X11-unix:/tmp/.X11-unix --env DISPLAY=unix$DISPLAY -it ubuntu bash
       ```
-  user could start vnc service on terminal server directly if desktop gui is installed on terminal server.
-  the terminal servers are DMZ computers which have two network interfaces, with one connected with cluster and another open to outside world. user can only connected from outside.
-  firewall/port-forwarding could be enforced on termal server e.g. only vnc connection is permitted; vpn connect is supported through wireguard.
+the terminal servers are DMZ computers which have two network interfaces, with one connected with cluster and another open to outside world. user can only connect from outside. firewall/port-forwarding could be enforced on termal server e.g.
+   -- external nic has public ip and domain name
+   -- vpn connect is supported through wireguard 
+   -- user connect through vnc to vnc-server run on terminal server
+   -- on terminal server, user can use resources inside the cluster
   
-- freeipaDockerfile: provide directory/authentication service (I got its dns conflict with ubuntu host, thus dns is not in docker but using dnsmasq in host.)
-  it should be only one instance in the pool.
-  see: https://github.com/freeipa/freeipa-container
-  
-- jenkinsDockerfile: provide jenkins service; jenkins can start docker at host.
+- freeipaDockerfile: 
+provide directory/authentication service (I got its dns conflict with ubuntu host, thus dns is not in docker but using dnsmasq in host.)
+it should be only one instance in the pool. see: https://github.com/freeipa/freeipa-container
+prefer to use the official image freeipa/freeipa-server:centos-?
 
+- jenkinsDockerfile: 
+provide jenkins service; jenkins can use docker daemon at a node thus can distribute workload to cluster. Jenkins also supports distribute workload with ssh (ssh agent).
       ```bash
         docker run -d \
        -v <your_jenkins_home_in_host>:/var/jenkins_home \
@@ -39,14 +44,16 @@ In the below is the key software/technology being used, and ubuntu 20.04 is the 
        --name <my_jenkins> jenkins/jenkins:lts
      ```
 - mysqlDockerfile
-  mysql see: https://github.com/docker-library/mysql/tree/master/8.0
+mysql is required by gitea see: https://github.com/docker-library/mysql/tree/master/8.0
 
 - giteaDockerfile
   gitea see: https://docs.gitea.io/en-us/install-with-docker/
   gitea backup/restore see: https://gist.github.com/sinbad/4bb771b916fa8facaf340af3fc49ee43
-  also refhttps://github.com/go-gitea/gitea/tree/master/docker
+  also ref https://github.com/go-gitea/gitea/tree/master/docker
   
-- podman support rootless container so that non-privilege  it specifies the image location as below, (location must be host disk). otherwise container/images are under user's home.
+## podman instead of docker
+master node has the pre-installed tools exports to work nodes with nfs. when a user wants extra tool or need different work enviornment (all nodes are ubuntu20.04), they could create rootless container with podman.
+support rootless container so that non-privilege  it specifies the image location as below, (location must be host disk). otherwise container/images are under user's home.
   ```toml
     [storage]
     driver = "overlay"
@@ -57,27 +64,28 @@ In the below is the key software/technology being used, and ubuntu 20.04 is the 
   
 - skopeo can used to inspect the image, manipunate its storage
   
-- dnsmasq: to support dhcp and pxe, and automatically deploy the computing node. 
+## dnsmasq: to support dhcp and pxe and automatically deploy the computing node (-tbd-) 
   (it is desired to wake up the backup server; run a backup and log a report; and power off the backup server).
   tbd https://stackoverflow.com/questions/38816077/run-dnsmasq-as-dhcp-server-from-inside-a-docker-container
   
-## setup
-1. management node setup see: [host_setup.md](host_setup.md)
+# setup
+1. master node setup see: [host_setup.md](host_setup.md)
   - tools installed on host
     - docker install w/ docker-volumn plugin
     - podman
-    - misc tools
+    - site tools 
+    - conda
   - docker_compose file
     - docker compose can start as daemon, the generated image has special signiture so that it doesn't rebuild the image each time. 
     
 2. compute node setup,
   - docker/podman install w/ nfs volume
   - nextflow 
-    local job is dispatched with nextflow pipeline (use podman rootless or docker container);  
+    local job is dispatched with nextflow pipeline (could use podman rootless) on the node
+  - compute nodes take workload from jenkins
     
 3. work flow
-  - user connects to the terminal server (terminal service container)
-  - user runs their job through nf pipeline at local node, which creates more containers
+  - user connects to the terminal server
+  - user runs their job through nf pipeline at local node, which could creates more container locally or remotely(with podman remote).
   - or user submits their job/pipeline into jenkins which delivers jobs to cluster
-
-
+  - common dir (nfs exported from master node) for tools / projects data;
