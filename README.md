@@ -3,14 +3,15 @@
 ## overview
 This repository contains scripts to setup a devops environment based on freeipa and docker. It's target to a small cluster of computers, though a single node should work fine. The env contains a management node and a number of computing nodes. The management node also works as a computer node in a single node env. 
 - The management node:
-  provides services of networking/storage, user authertication, job-dispatch and etc.  -tbd-Failover redundance. 
+  provides services of networking/storage, user authertication, job-dispatch and etc. 
 - The computing nodes 
   provide the computing power based on docker/podman.
 
 In the below is the key software/technology being used, and ubuntu 20.04 is the bassOS on both the management node and computing nodes.
 - linux/lvm2/nfs
 - docker-compose for freeipa/mysql/gitea/jenkins
-- dnsmasq w/pxe to bootup computing nodes -tbd-
+- dnsmasq w/pxe to bootup computing nodes -dropped-
+  (for a large cluster, using clearlinux is a better solution which provides: controlled os update/mixer; reference setup of software stack; and certainly PXE) 
 - podman/docker/vagrant run on computing nodes
 
 ## dockerfiles: 
@@ -22,13 +23,12 @@ this container run on terminal server, mount the data-volume, create a vnc for u
       ```bash
         docker run --volume /data:/data:rw -v /tmp/.X11-unix:/tmp/.X11-unix --env DISPLAY=unix$DISPLAY -it ubuntu bash
       ```
-ther terminal servers in intranet are just normal worknode.
-the terminal servers are DMZ computers if they have two network interfaces, with one connected with cluster and another open to outside world. user from outside of intranet can only connect through DMZ servers. firewall/port-forwarding could be enforced on termal server e.g.
+the terminal servers in intranet are just normal worknode.
+the terminal servers are supported to be connected from internet and they are DMZ computers as they have two network interfaces, with one connected with cluster and another open to outside. users from outside of intranet can only connect to DMZ servers which has firewall/port-forwarding enforced e.g.
    - external nic has public ip and domain name
-   - vpn connect is supported through wireguard 
-   - user connect through vnc to vnc-server run on cluster
-   - through terminal server user use other resources/services inside (under the access policy? or vnc-only? -tbd-)
-  
+   - vpn connect supported through wireguard to its external nic
+   - user connect are forwarded to internal nic e.g. access vnc-server run on cluster which are controlled by iptables.
+
 - freeipaDockerfile: 
 provide directory/authentication service (I got its dns conflict with ubuntu host, thus dns is not in docker but using dnsmasq in host.)
 it should be only one instance in the pool. see: https://github.com/freeipa/freeipa-container
@@ -84,7 +84,7 @@ master node has the pre-installed tools exports to work nodes with nfs. when a u
 2. compute node setup,
   - docker/podman install w/ nfs volume
   - nextflow 
-    local job is dispatched with nextflow pipeline (could use podman rootless) on the node
+    local job is dispatched with nextflow pipeline (could use podman rootless) on the node. (or docker swarm to the cluster directly?)
   - compute nodes take workload from jenkins
     
 3. work flow
