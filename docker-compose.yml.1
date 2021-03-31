@@ -1,56 +1,24 @@
-# yaml
+# yaml 
 version: '3.3'
 
-# external volume by docker-lvm-plugin
 volumes:
   docker_registry:
     external: true
   ipa-data:
     external: true
-# external network to assign ip to ipa-server instead dhcp
-# docker network create --subnet=172.18.0.0/16 mynet
-
+    
 services:
-  freeipa_2:
-    build:
-      context: .
-      dockerfile: freeipa.Dockerfile
-    hostname: ipa.ict-group.cn
-    container_name: freeipa_2
-    environment:
-      - IPA_SERVER_IP=172.17.0.2
-    #sysctls:
-    #  - net.ipv6.conf.all.disable_ipv6 = 0
-    volumes:
-      #- ipa-data:/data:Z
-      - /sys/fs/cgroup:/sys/fs/cgroup:ro
-      - /dev/urandom:/dev/random:ro 
-    ports:
-    #  - 53:53/udp
-    #  - 53:53
-      - 80:80
-      - 443:443
-      - 389:389
-      - 636:636
-      - 88:88
-      - 464:464
-      - 88:88/udp
-      - 464:464/udp
-      - 123:123/udp
-
   freeipa:
-    image: freeipa/freeipa-server:centos-8
+    build:
+      context:    docker-library-official-images/freeipa
+      dockerfile: Dockerfile.centos-8
     container_name: freeipa
-    sysctls:
-      - net.ipv6.conf.all.disable_ipv6=0
-    hostname: ipa.ict-group2.cn
     volumes:
       - ipa-data:/data:Z
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
-      - /dev/urandom:/dev/random:ro 
     ports:
-    #  - 53:53/udp
-    #  - 53:53
+      - 53:53/udp
+      - 53:53
       - 80:80
       - 443:443
       - 389:389
@@ -60,9 +28,6 @@ services:
       - 88:88/udp
       - 464:464/udp
       - 123:123/udp
-    environment:
-      - IPA_SERVER_IP=172.17.0.2
-    command: ["ipa-server-install", "-U", "--allow-zone-overlap", "--realm=ICT-GROUP2.CN", "--ds-password=12345678", "--admin-password=12345678", "--no-ntp"]
 
   centos:
     environment:
@@ -86,7 +51,6 @@ services:
     image: registry:2.3.0
     ports:
       - 5000:5000
-    network_mode: "host"
     environment:
       REGISTRY_HTTP_TLS_CERTIFICATE: /certs/domain.crt
       REGISTRY_HTTP_TLS_KEY: /certs/domain.key
