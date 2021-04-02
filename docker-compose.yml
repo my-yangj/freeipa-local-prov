@@ -118,7 +118,7 @@ services:
       - "3000:3000"
       - "222:22"
     depends_on:
-      - db
+      - mysql
  
   mysql:
     #image: mysql:5.7
