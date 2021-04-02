@@ -60,3 +60,4 @@ sudo apt-get -y install buildah skopeo
 ## freeipa client
 sudo apt-get install freeipa-client oddjob-mkhomedir -y
 ipa-client-install --mkhomedir --no-ntp
+**need reboot**
