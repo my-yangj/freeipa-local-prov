@@ -80,8 +80,8 @@ services:
   #-using-vagrant-  command: ["ls"]
 
   jenkins:
-    image: jenkins/jenkins:lts
-    container_name: jenkins
+    #image: jenkins/jenkins:lts
+    image: jenkins/jenkins
     volumes:
       - docker_jenkins/:/var/jenkins_home:Z
       - /var/run/docker.sock:/var/run/docker.sock
@@ -91,8 +91,6 @@ services:
     ports:
       - "8080:8080"
       - "50000:50000"
-    #privileged: true
-    #user: root
     restart: always
     environment:
       - USER_UID=1000
@@ -101,7 +99,7 @@ services:
 
   gitea:
     image: gitea/gitea:1.13.3
-    container_name: gitea
+    #image: gitea
     environment:
       - USER_UID=1000
       - USER_GID=1000
@@ -113,7 +111,7 @@ services:
     restart: always
     network_mode: "host"
     volumes:
-      - docker_gitea:/data
+      - docker_gitea:/data:Z
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
     ports:
@@ -122,18 +120,24 @@ services:
     depends_on:
       - db
  
-  db:
-    image: mysql:5.7
+  mysql:
+    #image: mysql:5.7
+    image: mysql
     restart: always
     environment:
+      - USER_UID=1000
+      - USER_GID=1000
       - MYSQL_ROOT_PASSWORD=gitea
       - MYSQL_USER=gitea
       - MYSQL_PASSWORD=gitea
       - MYSQL_DATABASE=gitea
     network_mode: "host"
+    ports:
+      - "3306:3306"
     volumes:
-      - docker_mysql:/var/lib/mysql
-
+      - docker_mysql:/var/lib/mysql:Z
+    security_opt:
+      - seccomp:unconfined
   registry:
     restart: always
     image: registry:2.3.0
@@ -141,14 +145,16 @@ services:
       - 5000:5000
     network_mode: "host"
     environment:
-      REGISTRY_HTTP_TLS_CERTIFICATE: /certs/domain.crt
-      REGISTRY_HTTP_TLS_KEY: /certs/domain.key
-      REGISTRY_STORAGE_DELETE_ENABLED: "true"
+      - USER_UID=1000
+      - USER_GID=1000
+      - REGISTRY_HTTP_TLS_CERTIFICATE=/certs/domain.crt
+      - REGISTRY_HTTP_TLS_KEY=/certs/domain.key
+      - REGISTRY_STORAGE_DELETE_ENABLED="true"
       #REGISTRY_AUTH: htpasswd
       #REGISTRY_AUTH_HTPASSWD_PATH: /auth/htpasswd
       #REGISTRY_AUTH_HTPASSWD_REALM: Registry Realm
       #REGISTRY_HTTP_SECRET: 11112222'
     volumes:
-      - docker_registry:/var/lib/registry
+      - docker_registry:/var/lib/registry:Z
       - ~/certs:/certs
       #- /path/auth:/auth
