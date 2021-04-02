@@ -1,4 +1,4 @@
-docker-compose up
+docker-compose up -d
 docker-compose run --rm -u centos centos bash
 
 # install rh toolset to mounted /opt
