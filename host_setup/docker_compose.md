@@ -5,6 +5,9 @@ with spec in docker_compose.yml, the below are the steps to build container imag
    - using named volumes in docker-compose.yml "docker_registry:/var/lib/registry", they has to be external managed.
      ```
      docker volume create -d lvm --name docker_registry --opt thinpool=tp03 --opt size=50G #registry
+     docker volume create -d lvm --name docker_gitea --opt thinpool=tp03 --opt size=100G #gitea
+     docker volume create -d lvm --name docker_mysql --opt thinpool=tp03 --opt size=10G #mysql
+     docker volume create -d lvm --name docker_jenkins --opt thinpool=tp03 --opt size=200G #mysql
      docker volume create -d lvm --name ipa-data --opt  thinpool=tp03 --opt size=1G  #freeipa 
      ```
 
@@ -63,9 +66,8 @@ with spec in docker_compose.yml, the below are the steps to build container imag
        #localhost:5000/freeipa:7 ipa-server-install 
      ```
      ```
-   docker run --sysctl net.ipv6.conf.all.disable_ipv6=0 -it -e IPA_SERVER_IP=172.17.0.2 -h ipa.ict-group.cn --read-only -v /sys/fs/cgroup:/sys/fs/cgroup:ro -v ipa-data:/data:Z -v /dev/urandom:/dev/random:ro -p 80:80 -p 443:443 -p 389:389 -p 636:636 -p 88:88 -p 464:464 -p 88:88/udp -p 464:464/udp -p 123:123/udp  freeipa/freeipa-server:centos-8 ipa-server-install --allow-zone-overlap -U --realm=ICT-GROUP.CN --ds-password=12345678 --admin-password=12345678 --no-ntp
+     docker run --sysctl net.ipv6.conf.all.disable_ipv6=0 -it -e IPA_SERVER_IP=172.17.0.2 -h ipa.ict-group.cn --read-only -v /sys/fs/cgroup:/sys/fs/cgroup:ro -v ipa-data:/data:Z -v /dev/urandom:/dev/random:ro -p 80:80 -p 443:443 -p 389:389 -p 636:636 -p 88:88 -p 464:464 -p 88:88/udp -p 464:464/udp -p 123:123/udp  freeipa/freeipa-server:centos-8 ipa-server-install --allow-zone-overlap -U --realm=ICT-GROUP.CN --ds-password=12345678 --admin-password=12345678 --no-ntp
 ```
-
    - conflict of port53 in ubuntu
      docker network create --driver=bridge --subnet=192.168.88.0/24 mynet
      sudo systemctl stop systemd-resolved.service
@@ -78,6 +80,3 @@ with spec in docker_compose.yml, the below are the steps to build container imag
    # vim /etc/hosts for lookuping up ipa server. #dns setup -tbd-
    apt install freeipa-client oddjob-mkhomedir && ipa-client-install --mkhomedir --no-ntp
    ```
-   
-# refine docker-compose.yml
-   - update yml to use and maintain local images (-tbd-)
