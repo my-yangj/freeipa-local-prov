@@ -8,6 +8,7 @@ with spec in docker_compose.yml, the below are the steps to build container imag
      docker volume create -d lvm --name docker_gitea --opt thinpool=tp03 --opt size=100G #gitea
      docker volume create -d lvm --name docker_mysql --opt thinpool=tp03 --opt size=10G #mysql
      docker volume create -d lvm --name docker_jenkins --opt thinpool=tp03 --opt size=200G #mysql
+     #not sure why freeipa container cannot use this lvm volume
      docker volume create -d lvm --name ipa-data --opt  thinpool=tp03 --opt size=1G  #freeipa 
      ```
 

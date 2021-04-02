@@ -11,73 +11,86 @@ volumes:
     external: true
   docker_jenkins:
     external: true
+  #ipa-data:
+  #  external: true
 
+#external network created by 'docker network create --subnet 172.20.0.0/16 mynet1'
+networks:
+  default:
+    external:
+      name: mynet1
+#
 services:
-  #-using-vagrant-freeipa_2:
-  #-using-vagrant-  build:
-  #-using-vagrant-    context: .
-  #-using-vagrant-    dockerfile: freeipa.Dockerfile
-  #-using-vagrant-  hostname: ipa.ict-group.cn
-  #-using-vagrant-  container_name: freeipa_2
-  #-using-vagrant-  environment:
-  #-using-vagrant-    - IPA_SERVER_IP=172.17.0.2
-  #-using-vagrant-  #sysctls:
-  #-using-vagrant-  #  - net.ipv6.conf.all.disable_ipv6 = 0
-  #-using-vagrant-  volumes:
-  #-using-vagrant-    #- ipa-data:/data:Z
-  #-using-vagrant-    - /sys/fs/cgroup:/sys/fs/cgroup:ro
-  #-using-vagrant-    - /dev/urandom:/dev/random:ro 
-  #-using-vagrant-  ports:
-  #-using-vagrant-  #  - 53:53/udp
-  #-using-vagrant-  #  - 53:53
-  #-using-vagrant-    - 80:80
-  #-using-vagrant-    - 443:443
-  #-using-vagrant-    - 389:389
-  #-using-vagrant-    - 636:636
-  #-using-vagrant-    - 88:88
-  #-using-vagrant-    - 464:464
-  #-using-vagrant-    - 88:88/udp
-  #-using-vagrant-    - 464:464/udp
-  #-using-vagrant-    - 123:123/udp
-  #-using-vagrant-
-  #-using-vagrant-freeipa:
-  #-using-vagrant-  image: freeipa/freeipa-server:centos-8
-  #-using-vagrant-  container_name: freeipa
-  #-using-vagrant-  sysctls:
-  #-using-vagrant-    - net.ipv6.conf.all.disable_ipv6=0
-  #-using-vagrant-  hostname: ipa.ict-group2.cn
-  #-using-vagrant-  volumes:
-  #-using-vagrant-    - ipa-data:/data:Z
-  #-using-vagrant-    - /sys/fs/cgroup:/sys/fs/cgroup:ro
-  #-using-vagrant-    - /dev/urandom:/dev/random:ro 
-  #-using-vagrant-  ports:
-  #-using-vagrant-  #  - 53:53/udp
-  #-using-vagrant-  #  - 53:53
-  #-using-vagrant-    - 80:80
-  #-using-vagrant-    - 443:443
-  #-using-vagrant-    - 389:389
-  #-using-vagrant-    - 636:636
-  #-using-vagrant-    - 88:88
-  #-using-vagrant-    - 464:464
-  #-using-vagrant-    - 88:88/udp
-  #-using-vagrant-    - 464:464/udp
-  #-using-vagrant-    - 123:123/udp
-  #-using-vagrant-  environment:
-  #-using-vagrant-    - IPA_SERVER_IP=172.17.0.2
-  #-using-vagrant-  command: ["ipa-server-install", "-U", "--allow-zone-overlap", "--realm=ICT-GROUP2.CN", "--ds-password=12345678", "--admin-password=12345678", "--no-ntp"]
-  #-using-vagrant-
-  #-using-vagrant-centos:
-  #-using-vagrant-  environment:
-  #-using-vagrant-    - DISPLAY=:0
-  #-using-vagrant-  build:
-  #-using-vagrant-    context: .
-  #-using-vagrant-    dockerfile: centos.Dockerfile
-  #-using-vagrant-  volumes:
-  #-using-vagrant-    - /space/opt:/opt
-  #-using-vagrant-    - /space/ubu:/home/ubu
-  #-using-vagrant-    - /tmp/.X11-unix/:/tmp/.X11-unix/
-  #-using-vagrant-  container_name: centos
-  #-using-vagrant-  command: ["ls"]
+  #-tt-freeipa_2:
+  #-tt-  build:
+  #-tt-    context: .
+  #-tt-    dockerfile: freeipa.Dockerfile
+  #-tt-  hostname: ipa.ict-group.cn
+  #-tt-  restart: always
+  #-tt-  environment:
+  #-tt-    - IPA_SERVER_IP=172.17.0.2
+  #-tt-  #sysctls:
+  #-tt-  #  - net.ipv6.conf.all.disable_ipv6 = 0
+  #-tt-  volumes:
+  #-tt-    - /home/ipa-data:/data:Z
+  #-tt-    - /sys/fs/cgroup:/sys/fs/cgroup:ro
+  #-tt-    - /dev/urandom:/dev/random:ro 
+  #-tt-  ports:
+  #-tt-  #  - 53:53/udp
+  #-tt-  #  - 53:53
+  #-tt-    - 80:80
+  #-tt-    - 443:443
+  #-tt-    - 389:389
+  #-tt-    - 636:636
+  #-tt-    - 88:88
+  #-tt-    - 464:464
+  #-tt-    - 88:88/udp
+  #-tt-    - 464:464/udp
+  #-tt-    - 123:123/udp
+  
+  freeipa:
+    image: freeipa/freeipa-server:centos-8
+    sysctls:
+      - net.ipv6.conf.all.disable_ipv6=0
+    hostname: ipa.ict-group.cn
+    restart: always
+    volumes:
+      - /home/ipa-data:/data:Z
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+      - /dev/urandom:/dev/random:ro
+    networks:
+      default:
+        ipv4_address: 172.20.0.2
+    ports:
+    #  - 53:53/udp
+    #  - 53:53
+      - 80:80
+      - 443:443
+      - 389:389
+      - 636:636
+      - 88:88
+      - 464:464
+      - 88:88/udp
+      - 464:464/udp
+      - 123:123/udp
+    environment:
+      - IPA_SERVER_IP=172.20.0.2
+    #this is one-time setup to update /home/ipa-data
+    command: ["ipa-server-install", "-U", "--allow-zone-overlap", "--realm=ICT-GROUP.CN", "--ds-password=12345678", "--admin-password=12345678", "--no-ntp"]
+
+  #-using-docker-
+  #-using-docker-centos:
+  #-using-docker-  environment:
+  #-using-docker-    - DISPLAY=:0
+  #-using-docker-  build:
+  #-using-docker-    context: .
+  #-using-docker-    dockerfile: centos.Dockerfile
+  #-using-docker-  volumes:
+  #-using-docker-    - /space/opt:/opt
+  #-using-docker-    - /space/ubu:/home/ubu
+  #-using-docker-    - /tmp/.X11-unix/:/tmp/.X11-unix/
+  #-using-docker-  container_name: centos
+  #-using-docker-  command: ["ls"]
 
   jenkins:
     image: jenkins/jenkins:lts
@@ -120,8 +133,8 @@ services:
       - mysql
  
   mysql:
-    #image: mysql:5.7
-    image: mysql
+    image: mysql:5.7
+    #image: mysql
     restart: always
     environment:
       - USER_UID=1000

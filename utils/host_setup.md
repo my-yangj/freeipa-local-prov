@@ -55,3 +55,8 @@ sudo apt-get -y install buildah skopeo
 
 #4. install vagrant and libvirt
 ```
+
+
+## freeipa client
+sudo apt-get install freeipa-client oddjob-mkhomedir -y
+ipa-client-install --mkhomedir --no-ntp
