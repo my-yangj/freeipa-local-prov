@@ -80,8 +80,7 @@ services:
   #-using-vagrant-  command: ["ls"]
 
   jenkins:
-    #image: jenkins/jenkins:lts
-    image: jenkins/jenkins
+    image: jenkins/jenkins:lts
     volumes:
       - docker_jenkins/:/var/jenkins_home:Z
       - /var/run/docker.sock:/var/run/docker.sock
