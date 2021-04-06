@@ -1,42 +1,38 @@
 # my dockerfiles
 
 ## overview
-This repository contains scripts to setup a devops environment based on freeipa and docker/vagrant. It's target to a small cluster of computers,
-though a single node works fine. The env contains a management node and a number of computing nodes.
-The management node works as a computer node in a single node env. 
-- The management node:
-  provides services of networking/storage, user authertication, job-dispatch and etc. 
-- The computing nodes 
-  provide the computing power based on docker/podman.
+This repository contains scripts to setup a dev-ops environment based on freeipa and docker. It targets a small cluster of computer nodes,
+though a single node works fine. The env contains a management node and a number of computing nodes. (The management node works as a computer node
+in a single node env. )
 
-the below is the key software/technology being used, and ubuntu 20.04 is used as the baseOS for both management node and computing nodes.
-(for cluster with much more node, using clearlinux is a good solution which supports much more features: controlled os update/mixer;
+The management node provides services of networking/storage, user authentication, job-distribution and etc.  And the computing nodes provide the computing resource 
+based on docker/podman.
+
+the below is the key software/technology being used, and ubuntu 20.04 is used as the base OS for both management node and computing nodes.
+(other linux should works but not tested; clearlinux is a good candidate which provides more performance, and server-friendly features: e.g. controlled os update/mixer,
  reference setup of software stack; iPXE; and much more) 
 - linux/lvm2/nfs
-- docker-compose for mysql/gitea/jenkins, vagrant for freeipa
-- dnsmasq w/pxe to bootup computing nodes (-dropped-)
+- docker-compose for mysql/gitea/jenkins/freeipa
 - podman/docker/vagrant run on computing nodes
 
 ## dockerfiles: 
-these dockerfiles below are used to generate local maintained container images, if image with same functionality are available from public docker image registry,
-those image could be used and retire or simply the local dockerfiles.
+Dockerfiles below are used to generate local maintained container images, if image with similar functionality available from public docker image registry, the local
+image could be replaced to ease the environment maintaining effort. 
 
 - centosDockerfile: 
-this container run on terminal server, mount the data-volume, create a vnc for user to connect. it is an alternative if a user dont like the default vnc-server on the terminal server directly.  the user can create container by using podman, and connect into it through vnc. otherwise user could start vnc service on terminal server directly if the default desktop gui works for them.  
+this container run on terminal servers. it mounts the data-volume and creates vnc for user to connect. it is selected if a user dont like the default vnc-server on the terminal server directly, or a user want to mounts the persistent-volumes of proj-data and tools to specific directories. Users can create container using podman, and connect into it through vnc. Alternatively, a user could start vnc service on terminal server directly if the default work env works for them (such as gui, default soft).  
       ```bash
         docker run --volume /data:/data:rw -v /tmp/.X11-unix:/tmp/.X11-unix --env DISPLAY=unix$DISPLAY -it ubuntu bash
       ```
-the terminal servers in intranet are just normal worknode.
-the terminal servers are supported to be connected from internet and they are DMZ computers as they have two network interfaces, with one connected with cluster and another open to outside. users from outside of intranet can only connect to DMZ servers which has firewall/port-forwarding enforced e.g.
-   - external nic has public ip and domain name
-   - vpn connect supported through wireguard to its external nic
-   - user connect are forwarded to internal nic e.g. access vnc-server run on cluster which are controlled by iptables.
+- users access computing resources through terminal services
+Terminal servers in intranet are just normal worknode.  While terminal servers to be connected from internet are DMZ computers. They have two network interfaces, with one connected with cluster and another open to outside. users from outside of intranet can only connect to DMZ servers which have firewall/port-forwarding enforced e.g.
+   - external nic has public ip and domain name, and user connected to these external nic
+   - vpn supported through wireguard, which has its own subnet
+   - user connections are forwarded to internal nic e.g. access vnc-server run on cluster from wireguard nic controlled by iptables.
 
-- freeipaDockerfile:
-freeipa is deployed on vagrant-libvirt instead of docker, as I got various effor when enable it as docker container. freeipa.Dockerfile and freeipa.setup.sh are not used.
-e.g. I got its dns conflict with ubuntu host, thus dns is not in docker but using dnsmasq in host. and both the official docker image and the local-built one can not work
-smoothly in my environment. for official docker image see dockerhub freeipa/freeipa-server:centos-? and https://github.com/freeipa/freeipa-container. 
-  - freeipaprovide directory/authentication service,
+- freeipaDockerfile:  (official freeipa/freeipa-server:centos-8 works, thus the local dockerfile is retired. docker is preferred instead of vagrant)
+I got its dns conflict with ubuntu host, thus dns is not in includedt. for official docker image see dockerhub freeipa/freeipa-server:centos-? and https://github.com/freeipa/freeipa-container. 
+  - freeipa provides directory/authentication service,
   - vagrant uses libvirt which save the vm images at /var/lib/libvirt/images/
   - vagrant steps
     ```
@@ -49,9 +45,9 @@ smoothly in my environment. for official docker image see dockerhub freeipa/free
     vagrant destroy && vagrant init && vagrant up && vagrant ssh  
     #install freeipa, ref to
     ```
-  - jenkins and gitea supports ldap client natively.
-  
-- jenkinsDockerfile: 
+
+- jenkinsDockerfile: (official images works and configured through docker-compose file).
+(start  
 provide jenkins service; jenkins can use docker daemon at a node thus can distribute workload to cluster. Jenkins also supports distribute workload with ssh (ssh agent).
    ```bash
      docker run -d \
@@ -98,7 +94,6 @@ master node has the pre-installed tools exports to work nodes with nfs. when a u
     - conda
   - docker_compose file
     - docker compose can start as daemon, the generated image has special signiture so that it doesn't rebuild the image each time.
-  - vagrant vm for freeipa
     
 2. compute node setup,
   - docker/podman install w/ nfs volume
@@ -108,6 +103,6 @@ master node has the pre-installed tools exports to work nodes with nfs. when a u
     
 3. work flow
   - user connects to the terminal server
-  - user runs their job through nf pipeline at local node, which could creates more container locally or remotely(with podman remote).
-  - or user submits their job/pipeline into jenkins which delivers jobs to cluster
-  - common dir (nfs exported from master node) for tools / projects data;
+  - user checkout project/tool data, which will mount as container volumes ( common dir are nfs exported from master node)
+  - user runs their job through nf pipeline, nf pipeline creates more containers. (user debug the pipeline locally).
+  - user submits their job/pipeline into jenkins which delivers jobs to cluster
