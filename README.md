@@ -22,7 +22,7 @@ image could be replaced to ease the environment maintaining effort.
 - centosDockerfile: 
 this container run on terminal servers. it mounts the data-volume and creates vnc for user to connect. it is selected if a user dont like the default vnc-server on the terminal server directly, or a user want to mounts the persistent-volumes of proj-data and tools to specific directories. Users can create container using podman, and connect into it through vnc. Alternatively, a user could start vnc service on terminal server directly if the default work env works for them (such as gui, default soft).  
       ```bash
-        docker run --volume /data:/data:rw -v /tmp/.X11-unix:/tmp/.X11-unix --env DISPLAY=unix$DISPLAY -it ubuntu bash
+        docker run --volume /data:/data:rw -v /tmp/.X11-unix:/tmp/.X11-unix --env DISPLAY=unix$DISPLAY -it centos7 bash
       ```
 - users access computing resources through terminal services
 Terminal servers in intranet are just normal worknode.  While terminal servers to be connected from internet are DMZ computers. They have two network interfaces, with one connected with cluster and another open to outside. users from outside of intranet can only connect to DMZ servers which have firewall/port-forwarding enforced e.g.
@@ -57,7 +57,8 @@ provide jenkins service; jenkins can use docker daemon at a node thus can distri
     -p 8080:8080 -p 50000:50000 \
     --name <my_jenkins> jenkins/jenkins:lts
   ```
-
+  (In my cluster, nextflow is used as the main pipeline while jenkins is used for ci management, e.g, cron, version, rundir, artifactory, report. nextflow's local executor supports wrapping the pipeline process into container, e.g. docker, podman. jenkins' docker plugin is not used. jenkins' SSH agent is used so that jenkins can distribute workload to multiple worknodes.)
+  
 - mysqlDockerfile
 mysql is required by gitea see: https://github.com/docker-library/mysql/tree/master/8.0
 
@@ -65,14 +66,15 @@ mysql is required by gitea see: https://github.com/docker-library/mysql/tree/mas
   gitea see: https://docs.gitea.io/en-us/install-with-docker/
   gitea backup/restore see: https://gist.github.com/sinbad/4bb771b916fa8facaf340af3fc49ee43
   also ref https://github.com/go-gitea/gitea/tree/master/docker
+  currently https protocol is used for git operation. ssh protocol is not supported.
   
 ## using podman for non-privilege user
-master node has the pre-installed tools exports to work nodes with nfs. when a user wants extra tool or need different work enviornment (all nodes are ubuntu20.04), they could create rootless container with podman, which supporst rootless container which is non-privilege.  it specifies the image location as below,  and image location must be host disk *instead of nfs*. otherwise container/images are under user's home.
+master node has the pre-installed tools exports to work nodes with nfs. when a user wants extra tool or need different work enviornment, e.g. centos (all nodes are ubuntu20.04), they could create rootless container with podman, which supporst rootless container which is non-privilege.  it specifies the image location as below,  and image location must be host disk *instead of nfs*. otherwise container/images are under user's home.
   ```toml
     [storage]
     driver = "overlay"
-    runroot = "/mnt/backup/"
-    graphroot = "/mnt/backup/"
+    runroot = "/mnt/backup/"   #should be a different dir than graphroot??
+    graphroot = "/mnt/backup/" 
     rootless_storage_path = "/mnt/backup/"
   ```
 - skopeo can used to inspect the image, manipunate its storage
@@ -92,6 +94,7 @@ master node has the pre-installed tools exports to work nodes with nfs. when a u
     - podman
     - site tools 
     - conda
+    - nfs exportfs
   - docker_compose file
     - docker compose can start as daemon, the generated image has special signiture so that it doesn't rebuild the image each time.
     
@@ -103,6 +106,10 @@ master node has the pre-installed tools exports to work nodes with nfs. when a u
     
 3. work flow
   - user connects to the terminal server
-  - user checkout project/tool data, which will mount as container volumes ( common dir are nfs exported from master node)
-  - user runs their job through nf pipeline, nf pipeline creates more containers. (user debug the pipeline locally).
-  - user submits their job/pipeline into jenkins which delivers jobs to cluster
+  - user checkout project/tool data, if they havn't been mounted as container volumes (common dir are nfs exported from master node)
+  - user runs their job through nf pipeline, nf pipeline processes are run in containers.
+  - user submits their job/pipeline into gitea and jenkins jobs are setup and run ci. ci jobs are deliverred to cluster.
+
+4. about multiple masternode 
+  - freeipa servers have active and standby setup.
+  - gitea/mysql/jenkins are just standalone services without any mirror or redundency.
