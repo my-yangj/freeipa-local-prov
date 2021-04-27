@@ -6,14 +6,17 @@ though a single node works fine. The env contains a management node and a number
 in a single node env. )
 
 The management node provides services of networking/storage, user authentication, job-distribution and etc.  And the computing nodes provide the computing resource 
-based on docker/podman.
+based on docker/podman. singularity or podman is preferred as it doesn't required the privilege permission on host. The container jobs can be distributed to cluster with a batch execution program e.g. slurm, or through a ci/cd program, e.g. jenkins. users use the pipeline tools e.g. nextflow or snakemake to orchestrate the workload as containers jobs running cluster.
+
+- docker/podman/singularity -> nextflow pipeline -> jenkins -> cluster.
+- singularity -> snakemake pipeline -> jenkins/slurm -> cluster.
 
 the below is the key software/technology being used, and ubuntu 20.04 is used as the base OS for both management node and computing nodes.
 (other linux should works but not tested; clearlinux is a good candidate which provides more performance, and server-friendly features: e.g. controlled os update/mixer,
  reference setup of software stack; iPXE; and much more) 
 - linux/lvm2/nfs
-- docker-compose for mysql/gitea/jenkins/freeipa
-- podman/docker/vagrant run on computing nodes
+- docker-compose for mysql/gitea/jenkins/freeipa/slurm
+- podman/docker/singularity run on computing nodes  (vagrant?)
 
 ## dockerfiles: 
 Dockerfiles below are used to generate local maintained container images, if image with similar functionality available from public docker image registry, the local
