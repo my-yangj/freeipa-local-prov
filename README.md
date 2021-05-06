@@ -134,5 +134,5 @@ master node has the pre-installed tools exports to work nodes with nfs. when a u
 # Using the physical machine directly?
   alternative, we can put services directly on host machine, giving it is quite stable and supported by host os e.g. centos/rhel. 
   The node with key services installed becomes the master node which controls other computing nodes. The jobs dispatcher can be jenkins or slurm-w-singularity. computing node uses the services on master node, and run the dispatched task from ci or batch system. 
-  - ipa + jenkins + gitolite + slurm-w-singularity + conda w/ cockpick on centos7 host-os for master node.
+  - ipa + jenkins + gitolite + slurm-w-singularity + conda, cockpick on centos7 host-os for master node.
   - ipa-client, slurm-w-singularity on computing node. 
